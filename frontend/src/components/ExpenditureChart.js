@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -20,7 +20,7 @@ ChartJS.register(
   Legend
 );
 
-function ExpenditureChart({ analysisData }) {
+const ExpenditureChart = forwardRef(function ExpenditureChart({ analysisData }, ref) {
   // The component receives the expenditure analysis data as a prop
 
   // 1. Prepare the data for the chart
@@ -67,9 +67,9 @@ function ExpenditureChart({ analysisData }) {
   // 3. Render the Bar chart component
   return (
     <div className="chart-container">
-      <Bar options={chartOptions} data={chartData} />
+      <Bar ref={ref} options={chartOptions} data={chartData} />
     </div>
   );
-}
+});
 
 export default ExpenditureChart;

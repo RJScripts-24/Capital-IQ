@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import MetricsDisplay from './MetricsDisplay';
 import ExpenditureChart from './ExpenditureChart';
+import ExpenditureComparisonChart from './ExpenditureComparisonChart';
 import { jsPDF } from 'jspdf';
+
 function FinAnalysis() {
     const [file, setFile] = useState(null);
     const [results, setResults] = useState(null);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const expChartRef = useRef(null);
+    const compareChartRef = useRef(null);
     
     // Function to convert anomalies to CSV and trigger download
     const downloadAnomaliesCSV = () => {
@@ -67,6 +71,34 @@ function FinAnalysis() {
             doc.text('No specific savings suggestions at this time.', 10, y);
         }
         
+        try {
+            let yAfterText = y + 10;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const left = 10;
+            const maxWidth = pageWidth - left * 2;
+            const chartHeight = 80;
+            
+            if (expChartRef.current && typeof expChartRef.current.toBase64Image === 'function') {
+                const img1 = expChartRef.current.toBase64Image();
+                if (yAfterText + chartHeight > doc.internal.pageSize.getHeight() - 10) {
+                    doc.addPage();
+                    yAfterText = 20;
+                }
+                doc.addImage(img1, 'PNG', left, yAfterText, maxWidth, chartHeight);
+                yAfterText += chartHeight + 10;
+            }
+            
+            if (compareChartRef.current && typeof compareChartRef.current.toBase64Image === 'function') {
+                const img2 = compareChartRef.current.toBase64Image();
+                if (yAfterText + chartHeight > doc.internal.pageSize.getHeight() - 10) {
+                    doc.addPage();
+                    yAfterText = 20;
+                }
+                doc.addImage(img2, 'PNG', left, yAfterText, maxWidth, chartHeight);
+            }
+        } catch (e) {
+            // ignore chart rendering errors in PDF generation
+        }
         doc.save('savings_planner.pdf');
     };
 
@@ -134,7 +166,12 @@ function FinAnalysis() {
                             {/* --- NEW PART START --- */}
                             {/* Conditionally render the chart if there is category data */}
                             {Object.keys(results.expenditure_analysis.spend_by_category).length > 0 ? (
-                                <ExpenditureChart analysisData={results.expenditure_analysis} />
+                                <>
+                                    <ExpenditureChart ref={expChartRef} analysisData={results.expenditure_analysis} />
+                                    <div style={{ marginTop: '24px' }}>
+                                        <ExpenditureComparisonChart ref={compareChartRef} analysisData={results.expenditure_analysis} />
+                                    </div>
+                                </>
                             ) : (
                                 <p>No category spending data to visualize.</p>
                             )}
