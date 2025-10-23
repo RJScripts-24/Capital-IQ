@@ -1,0 +1,84 @@
+# Byte-compiled / cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+venv.bak/
+
+# Python packaging / build artifacts
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Tests / coverage
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment / secrets
+.env
+.env.*
+secrets.json
+credentials.yml
+
+# Data and ML artifacts (project-specific)
+# - Large CSVs and generated test data
+backend/*.csv
+# - Model binaries, scalers, metrics
+backend/ml_assets/
+backend/ml_assets/*.pkl
+backend/ml_assets/*.joblib
+backend/ml_assets/*.h5
+backend/ml_assets/*.onnx
+
+# Frontend / Node
+node_modules/
+frontend/node_modules/
+# Ignore generated frontend build (can be built from source)
+frontend/build/
+build/
+
+# npm / lock files (keep package-lock.json if you want reproducible installs)
+# package-lock.json
+# yarn.lock
+
+# IDEs / editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor swap / backup files
+*~
+*.swp
+*.swo
+
+# Misc
+*.pyc
+*.pyo
+*.pyd
+*.class

@@ -1,0 +1,274 @@
+/* --- Global Styles & Body --- */
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f4f7f9; /* A light grey background for contrast */
+    color: #333; /* Dark grey for text for readability */
+    line-height: 1.6;
+}
+
+/* --- Main App Container --- */
+.App {
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    background: #ffffff; /* White background for the main content area */
+    padding: 20px 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* A subtle shadow for depth */
+}
+
+/* --- Header Section --- */
+header {
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #2c3e50; /* A deep, professional blue */
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #7f8c8d; /* A muted grey for the sub-header text */
+    font-size: 1.1em;
+}
+
+/* --- File Upload Form --- */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Spacing between the input and the button */
+    margin-bottom: 30px;
+}
+
+.upload-form input[type="file"] {
+    border: 2px dashed #bdc3c7;
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.upload-form input[type="file"]:hover {
+    border-color: #3498db;
+    background-color: #fafdff;
+}
+
+.upload-form button {
+    background-color: #3498db; /* A nice, friendly blue */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.upload-form button:hover:not(:disabled) {
+    background-color: #2980b9; /* A darker blue on hover */
+    transform: translateY(-2px); /* A slight lift effect on hover */
+}
+
+.upload-form button:disabled {
+    background-color: #bdc3c7; /* Greyed out when loading */
+    cursor: not-allowed;
+}
+
+/* --- Error Message Styling --- */
+.error-message {
+    color: #e74c3c; /* A strong red for errors */
+    background-color: #fbeae5;
+    border: 1px solid #e74c3c;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* --- Results Display --- */
+.results-container {
+    margin-top: 20px;
+}
+
+.results-card {
+    background-color: #fdfdfd;
+    border: 1px solid #eef;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.results-card h3 {
+    margin-top: 0;
+    color: #2980b9;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+}
+
+.results-card h4 {
+    color: #34495e;
+    margin-top: 25px;
+}
+
+/* Specific styling for lists in results */
+.results-card ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.results-card li {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+}
+
+/* --- Confusion Matrix Table --- */
+.confusion-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.95em;
+    text-align: center;
+}
+
+.confusion-matrix th,
+.confusion-matrix td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+}
+
+.confusion-matrix thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.confusion-matrix tbody th {
+    text-align: left;
+    background-color: #f8f8f8;
+}
+
+/* Color coding for matrix cells */
+.confusion-matrix .true-positive,
+.confusion-matrix .true-negative {
+    background-color: #d4edda; /* Light green for correct predictions */
+    color: #155724;
+}
+.confusion-matrix .false-negative,
+.confusion-matrix .false-positive {
+    background-color: #f8d7da; /* Light red for incorrect predictions */
+    color: #721c24;
+}
+
+/* --- Formula/Calculation Blocks --- */
+.calculation {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-left: 4px solid #3498db;
+}
+
+.calculation strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.chart-container {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* --- Anomalies Table Styling --- */
+.anomalies-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.95em;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.anomalies-table thead tr {
+    background-color: #e74c3c;
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+
+.anomalies-table th,
+.anomalies-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #dddddd;
+}
+
+.anomalies-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.anomalies-table tbody tr:nth-of-type(even) {
+    background-color: #f8f8f8;
+}
+
+.anomalies-table tbody tr:hover {
+    background-color: #ffedea;
+    color: #e74c3c;
+}
+
+.summary-text {
+    margin-bottom: 15px;
+    font-size: 1.05em;
+}
+
+/* --- Actions container and Download Button --- */
+.actions-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.download-btn {
+    background-color: #27ae60; /* Green color for download */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.download-btn:active {
+    transform: translateY(0);
+}
+
+.download-icon {
+    font-size: 16px;
+}
