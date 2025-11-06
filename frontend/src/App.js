@@ -1,24 +1,48 @@
-import React from 'react';
-import FinAnalysis from './components/FinAnalysis'; // We import the component that has all our logic
-import './App.css'; // We import the main stylesheet for the application
+import React, { useState } from 'react';
+import FinAnalysis from './components/FinAnalysis';
+import './App.css';
 
-/**
- * This is the root component of the React application.
- * It's a functional component that returns the main layout of the app.
- */
 function App() {
-  // The component returns a single div with the className "App",
-  // which serves as the main container. Inside this container,
-  // we render the FinAnalysis component, which holds all the
-  // user interface for file uploading and results display.
+  // We'll lift the results state up so we can pass it to left/right columns
+  const [results, setResults] = useState(null);
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <div className="App">
-      <FinAnalysis />
+    <div className="App full-screen-app">
+      <div className="main-split-layout">
+        {/* Left: MetricsDisplay (and maybe upload form) */}
+        <div className="left-panel">
+          <FinAnalysis
+            results={results}
+            setResults={setResults}
+            file={file}
+            setFile={setFile}
+            error={error}
+            setError={setError}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            panel="left"
+          />
+        </div>
+        {/* Right: Expenditure Analysis, Anomalies, etc. */}
+        <div className="right-panel">
+          <FinAnalysis
+            results={results}
+            setResults={setResults}
+            file={file}
+            setFile={setFile}
+            error={error}
+            setError={setError}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            panel="right"
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
-// We export the App component so it can be used by index.js,
-// which is the entry point that renders the entire application
-// into the DOM (specifically into the <div id="root"></div> in index.html).
 export default App;

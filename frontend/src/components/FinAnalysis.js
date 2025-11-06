@@ -1,15 +1,26 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import axios from 'axios';
+
 import MetricsDisplay from './MetricsDisplay';
+import ConfusionMatrixImage from './ConfusionMatrixImage';
 import ExpenditureChart from './ExpenditureChart';
 import ExpenditureComparisonChart from './ExpenditureComparisonChart';
+import Chatbot from './Chatbot';
+import WhatIfSimulator from './WhatIfSimulator';
 import { jsPDF } from 'jspdf';
 
-function FinAnalysis() {
-    const [file, setFile] = useState(null);
-    const [results, setResults] = useState(null);
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+function FinAnalysis({
+    results,
+    setResults,
+    file,
+    setFile,
+    error,
+    setError,
+    isLoading,
+    setIsLoading,
+    panel = 'left',
+}) {
+    const [activeTab, setActiveTab] = React.useState('analysis');
     const expChartRef = useRef(null);
     const compareChartRef = useRef(null);
     
@@ -139,98 +150,125 @@ function FinAnalysis() {
         }
     };
 
+    // Only render the left or right panel content based on the 'panel' prop
     return (
-        <div className="container">
-            <header>
-                <h1>AI-Powered Financial Analyzer</h1>
-                <p>Upload your credit card transaction CSV to detect anomalies, analyze spending, and get a personalized savings plan.</p>
-            </header>
-            
-            <form onSubmit={handleSubmit} className="upload-form">
-                <input type="file" accept=".csv" onChange={handleFileChange} />
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Analyzing...' : 'Analyze Transactions'}
-                </button>
-            </form>
-
-            {error && <p className="error-message">{error}</p>}
-            
-            {results && (
-                <div className="results-container">
-                    <MetricsDisplay performance={results.model_performance} />
-                    
-                    {results.expenditure_analysis && !results.expenditure_analysis.error && (
-                         <div className="results-card">
-                            <h3>Expenditure Analysis</h3>
-
-                            {/* --- NEW PART START --- */}
-                            {/* Conditionally render the chart if there is category data */}
-                            {Object.keys(results.expenditure_analysis.spend_by_category).length > 0 ? (
-                                <>
-                                    <ExpenditureChart ref={expChartRef} analysisData={results.expenditure_analysis} />
-                                    <div style={{ marginTop: '24px' }}>
-                                        <ExpenditureComparisonChart ref={compareChartRef} analysisData={results.expenditure_analysis} />
+        <div className={`container finanalysis-panel-${panel}`}>
+            {panel === 'left' && (
+                <>
+                    <header>
+                        <h1>Capital-IQ</h1>
+                        <p>Upload your credit card transaction CSV to detect anomalies, analyze spending, and get a personalized savings plan.</p>
+                    </header>
+                    <form onSubmit={handleSubmit} className="upload-form">
+                        <input type="file" accept=".csv" onChange={handleFileChange} />
+                        <button type="submit" disabled={isLoading}>
+                            {isLoading ? 'Analyzing...' : 'Analyze Transactions'}
+                        </button>
+                    </form>
+                    {error && <p className="error-message">{error}</p>}
+                    {/* Show metrics and confusion matrix if results exist */}
+                    {results && (
+                        <div className="results-container">
+                            <ConfusionMatrixImage file={file} />
+                            <MetricsDisplay performance={results.model_performance} />
+                        </div>
+                    )}
+                </>
+            )}
+            {panel === 'right' && (
+                <>
+                    {/* Tab Navigation for right panel only */}
+                    <div className="tab-navigation">
+                        <button 
+                            className={activeTab === 'analysis' ? 'active' : ''} 
+                            onClick={() => setActiveTab('analysis')}
+                        >
+                            📊 Analysis
+                        </button>
+                        <button 
+                            className={activeTab === 'chatbot' ? 'active' : ''} 
+                            onClick={() => setActiveTab('chatbot')}
+                        >
+                            💬 AI Assistant
+                        </button>
+                        <button 
+                            className={activeTab === 'simulator' ? 'active' : ''} 
+                            onClick={() => setActiveTab('simulator')}
+                        >
+                            🔮 What-If Simulator
+                        </button>
+                    </div>
+                    {activeTab === 'analysis' && results && (
+                        <div className="results-container">
+                            {results.expenditure_analysis && !results.expenditure_analysis.error && (
+                                <div className="results-card">
+                                    <h3>Expenditure Analysis</h3>
+                                    {Object.keys(results.expenditure_analysis.spend_by_category).length > 0 ? (
+                                        <>
+                                            <ExpenditureChart ref={expChartRef} analysisData={results.expenditure_analysis} />
+                                            <div style={{ marginTop: '24px' }}>
+                                                <ExpenditureComparisonChart ref={compareChartRef} analysisData={results.expenditure_analysis} />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p>No category spending data to visualize.</p>
+                                    )}
+                                    <p><strong>Total Spend:</strong> ${results.expenditure_analysis.total_spend}</p>
+                                    <h4>Savings Planner:</h4>
+                                    {Object.keys(results.expenditure_analysis.savings_plan).length > 0 ? (
+                                        <ul>
+                                            {Object.entries(results.expenditure_analysis.savings_plan).map(([cat, suggestion]) => (
+                                                <li key={cat}>{suggestion}</li>
+                                            ))}
+                                        </ul>
+                                    ) : <p>No specific savings suggestions at this time.</p>}
+                                    <div className="actions-container">
+                                        <button className="download-btn" onClick={downloadSavingsPlannerPDF}>
+                                            <span className="download-icon">📄</span> Download Savings Planner as PDF
+                                        </button>
                                     </div>
-                                </>
-                            ) : (
-                                <p>No category spending data to visualize.</p>
+                                </div>
                             )}
-                            {/* --- NEW PART END --- */}
-
-                            <p><strong>Total Spend:</strong> ${results.expenditure_analysis.total_spend}</p>
-
-                            <h4>Savings Planner:</h4>
-                            {Object.keys(results.expenditure_analysis.savings_plan).length > 0 ? (
-                                <ul>
-                                   {Object.entries(results.expenditure_analysis.savings_plan).map(([cat, suggestion]) => (
-                                        <li key={cat}>{suggestion}</li>
-                                    ))}
-                                </ul>
-                            ) : <p>No specific savings suggestions at this time.</p>}
-                            <div className="actions-container">
-                                <button className="download-btn" onClick={downloadSavingsPlannerPDF}>
-                                    <span className="download-icon">📄</span> Download Savings Planner as PDF
-                                </button>
+                            <div className="results-card">
+                                <h3>Detected Anomalies</h3>
+                                {results.user_anomalies && results.user_anomalies.length > 0 ? (
+                                    <>
+                                        <p className="summary-text">
+                                            Found <strong>{results.user_anomalies.length}</strong> potentially anomalous transaction(s). Please review the items below.
+                                        </p>
+                                        <table className="anomalies-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Amount ($)</th>
+                                                    <th>Category</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {results.user_anomalies.map((anomaly, index) => (
+                                                    <tr key={index}>
+                                                        <td>{anomaly.Time}</td>
+                                                        <td>{typeof anomaly.Amount === 'number' ? anomaly.Amount.toFixed(2) : Number(anomaly.Amount).toFixed(2)}</td>
+                                                        <td>{anomaly.Category || 'N/A'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                        <div className="actions-container">
+                                            <button className="download-btn" onClick={downloadAnomaliesCSV}>
+                                                <span className="download-icon">📥</span> Download Anomalies as CSV
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p>No potential anomalies were detected in your file.</p>
+                                )}
                             </div>
                         </div>
                     )}
-
-                    <div className="results-card">
-                        <h3>Detected Anomalies</h3>
-                        {results.user_anomalies && results.user_anomalies.length > 0 ? (
-                            <>
-                                <p className="summary-text">
-                                    Found <strong>{results.user_anomalies.length}</strong> potentially anomalous transaction(s). Please review the items below.
-                                </p>
-                                <table className="anomalies-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Time</th>
-                                            <th>Amount ($)</th>
-                                            <th>Category</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {results.user_anomalies.map((anomaly, index) => (
-                                            <tr key={index}>
-                                                <td>{anomaly.Time}</td>
-                                                <td>{typeof anomaly.Amount === 'number' ? anomaly.Amount.toFixed(2) : Number(anomaly.Amount).toFixed(2)}</td>
-                                                <td>{anomaly.Category || 'N/A'}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="actions-container">
-                                    <button className="download-btn" onClick={downloadAnomaliesCSV}>
-                                        <span className="download-icon">📥</span> Download Anomalies as CSV
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <p>No potential anomalies were detected in your file.</p>
-                        )}
-                    </div>
-                </div>
+                    {activeTab === 'chatbot' && <Chatbot />}
+                    {activeTab === 'simulator' && <WhatIfSimulator />}
+                </>
             )}
         </div>
     );

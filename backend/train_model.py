@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 print("Starting model training process...")
 
@@ -72,6 +74,15 @@ metrics = {
 print("Model evaluation complete. Metrics:")
 print(metrics)
 
+# --- Confusion Matrix Plot ---
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6, 4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Not Fraud', 'Fraud'], yticklabels=['Not Fraud', 'Fraud'])
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.tight_layout()
+plt.show()
 
 # --- 6. Save Artifacts ---
 # Create the ml_assets directory if it doesn't already exist
