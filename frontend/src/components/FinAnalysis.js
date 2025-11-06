@@ -1,8 +1,5 @@
 import React, { useRef } from 'react';
 import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL;
-
 import MetricsDisplay from './MetricsDisplay';
 import ConfusionMatrixImage from './ConfusionMatrixImage';
 import ExpenditureChart from './ExpenditureChart';
@@ -10,6 +7,8 @@ import ExpenditureComparisonChart from './ExpenditureComparisonChart';
 import Chatbot from './Chatbot';
 import WhatIfSimulator from './WhatIfSimulator';
 import { jsPDF } from 'jspdf';
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 function FinAnalysis({
     results,
