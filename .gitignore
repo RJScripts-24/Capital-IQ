@@ -43,7 +43,7 @@ credentials.yml
 backend/*.csv
 # - Model binaries, scalers, metrics
 backend/ml_assets/
-backend/ml_assets/*.pkl
+
 backend/ml_assets/*.joblib
 backend/ml_assets/*.h5
 backend/ml_assets/*.onnx
