@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 import MetricsDisplay from './MetricsDisplay';
 import ConfusionMatrixImage from './ConfusionMatrixImage';
 import ExpenditureChart from './ExpenditureChart';
@@ -135,8 +137,8 @@ function FinAnalysis({
         setResults(null);
 
         try {
-            // This URL points to your running Flask backend
-            const response = await axios.post('http://127.0.0.1:5000/analyze', formData, {
+            // Use environment variable for backend URL
+            const response = await axios.post(`${API_URL}/analyze`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 
 // This component fetches and displays the confusion matrix image from the backend
 function ConfusionMatrixImage({ file }) {
@@ -22,7 +24,7 @@ function ConfusionMatrixImage({ file }) {
             const formData = new FormData();
             formData.append('file', file);
             try {
-                const response = await axios.post('http://127.0.0.1:5000/confusion-matrix', formData, {
+                const response = await axios.post(`${API_URL}/confusion-matrix`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
                 setImgSrc(`data:image/png;base64,${response.data.image}`);

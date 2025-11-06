@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function WhatIfSimulator() {
     const [scenario, setScenario] = useState('');
     const [simulation, setSimulation] = useState(null);
@@ -16,7 +18,7 @@ function WhatIfSimulator() {
         setSimulation(null);
 
         try {
-            const result = await axios.post('http://127.0.0.1:5000/simulate', {
+            const result = await axios.post(`${API_URL}/simulate`, {
                 scenario: scenario
             });
             setSimulation(result.data);

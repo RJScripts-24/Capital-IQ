@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function Chatbot() {
     const [query, setQuery] = useState('');
     const [response, setResponse] = useState('');
@@ -16,7 +18,7 @@ function Chatbot() {
         setResponse('');
 
         try {
-            const result = await axios.post('http://127.0.0.1:5000/query', {
+            const result = await axios.post(`${API_URL}/query`, {
                 query: query
             });
             setResponse(result.data.response || JSON.stringify(result.data, null, 2));
