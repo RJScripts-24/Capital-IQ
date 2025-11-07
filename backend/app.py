@@ -94,22 +94,31 @@ def analyze_transactions():
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
+
     try:
+        # Save uploaded file for later use by other endpoints
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        save_path = os.path.join(app_dir, 'large_test_data.csv')
+        file.seek(0)  # Reset file pointer
+        with open(save_path, 'wb') as f:
+            f.write(file.read())
+        print(f"[UPLOAD] Saved uploaded CSV to: {save_path}")
+        file.seek(0)  # Reset again for pandas
         user_df = pd.read_csv(file)
 
         # --- Part A: Expenditure Analysis on raw data ---
         analysis_results = perform_expenditure_analysis(user_df.copy())
-        
+
         # --- Part B: Anomaly Detection using the trained model ---
         # IMPORTANT: The model requires the user's CSV to have the same structure
         # as the training data ('Time', 'V1'-'V28', 'Amount').
         # We will check for the essential columns.
         required_cols = ['Time', 'Amount'] + [f'V{i}' for i in range(1, 29)]
         if not all(col in user_df.columns for col in required_cols):
-             return jsonify({
-                 "error": "CSV is missing required columns for anomaly detection.",
-                 "details": "The model requires 'Time', 'Amount', and 'V1' through 'V28' columns."
-             }), 400
+            return jsonify({
+                "error": "CSV is missing required columns for anomaly detection.",
+                "details": "The model requires 'Time', 'Amount', and 'V1' through 'V28' columns."
+            }), 400
 
         user_df_processed = user_df.copy()
         user_df_processed['scaled_amount'] = scaler.transform(user_df_processed['Amount'].values.reshape(-1, 1))
@@ -123,7 +132,7 @@ def analyze_transactions():
         # Predict anomalies
         predictions = fraud_model.predict(user_df_processed)
         user_df['is_anomaly'] = predictions
-        
+
         anomalies = user_df[user_df['is_anomaly'] == 1].to_dict(orient='records')
 
         # --- Part C: Combine all results into a single response ---
@@ -132,7 +141,7 @@ def analyze_transactions():
             "user_anomalies": anomalies,       # From the user's data
             "expenditure_analysis": analysis_results # Also from the user's data
         }
-        
+
         return jsonify(response_data)
 
     except Exception as e:
@@ -266,20 +275,27 @@ def natural_language_query():
         # Try to load the large_test_data.csv as sample data
         app_dir = os.path.dirname(os.path.abspath(__file__))
         sample_data_path = os.path.join(app_dir, 'large_test_data.csv')
+        print(f"[QUERY] Looking for CSV at: {sample_data_path}")
+        if not os.path.exists(sample_data_path):
+            print("[QUERY] CSV file not found!")
+            return jsonify({"error": "No data available. Please upload a CSV file first using the /analyze endpoint."}), 400
         sample_df = pd.read_csv(sample_data_path)
+        print(f"[QUERY] Loaded CSV with shape: {sample_df.shape}")
         sample_df['is_anomaly'] = 0  # Add anomaly column for demo
-        
+
         # Parse the query
         query_requirements = parse_natural_language_query(query)
-        
+
         # Analyze with data
         result = analyze_query_with_data(query_requirements, sample_df)
-        
+
         return jsonify(result)
-    
+
     except FileNotFoundError:
+        print("[QUERY] FileNotFoundError for CSV!")
         return jsonify({"error": "No data available. Please upload a CSV file first using the /analyze endpoint."}), 400
     except Exception as e:
+        print(f"[QUERY] Exception: {str(e)}")
         return jsonify({"error": "An error occurred during query processing", "details": str(e)}), 500
 
 def simulate_financial_decision(scenario, df):
@@ -353,16 +369,23 @@ def what_if_simulation():
         # Load sample data
         app_dir = os.path.dirname(os.path.abspath(__file__))
         sample_data_path = os.path.join(app_dir, 'large_test_data.csv')
+        print(f"[SIMULATE] Looking for CSV at: {sample_data_path}")
+        if not os.path.exists(sample_data_path):
+            print("[SIMULATE] CSV file not found!")
+            return jsonify({"error": "No data available. Please upload a CSV file first."}), 400
         sample_df = pd.read_csv(sample_data_path)
+        print(f"[SIMULATE] Loaded CSV with shape: {sample_df.shape}")
         
         # Run simulation
         result = simulate_financial_decision(scenario, sample_df)
         
         return jsonify(result)
-    
+
     except FileNotFoundError:
+        print("[SIMULATE] FileNotFoundError for CSV!")
         return jsonify({"error": "No data available. Please upload a CSV file first."}), 400
     except Exception as e:
+        print(f"[SIMULATE] Exception: {str(e)}")
         return jsonify({"error": "An error occurred during simulation", "details": str(e)}), 500
 
 # --- 6. Confusion Matrix Endpoint ---
