@@ -42,7 +42,7 @@ credentials.yml
 # - Large CSVs and generated test data
 backend/*.csv
 # - Model binaries, scalers, metrics
-backend/ml_assets/
+
 
 backend/ml_assets/*.joblib
 backend/ml_assets/*.h5
